@@ -14,14 +14,12 @@ namespace MenuOrder.Models
         public decimal Price { get; set; }
         public string Category { get; set; }
 
-        // Виртуальный метод для демонстрации полиморфизма
         public virtual decimal CalculatePrice()
         {
             return Price;
         }
     }
 
-    // Пример наследования 1
     public class Dish : MenuItem
     {
         public int CookingTime { get; set; }
@@ -32,7 +30,6 @@ namespace MenuOrder.Models
         }
     }
 
-    // Пример наследования 2
     public class Beverage : MenuItem
     {
         public int Volume { get; set; }
@@ -40,7 +37,7 @@ namespace MenuOrder.Models
 
         public override decimal CalculatePrice()
         {
-            return Price;
+            return IsAlcoholic ? Price * 1.2m : Price;
         }
     }
 }

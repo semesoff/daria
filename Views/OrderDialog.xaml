@@ -12,6 +12,10 @@
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
         <!-- Доступные элементы меню -->
         <Grid Grid.Column="0">
@@ -70,9 +74,9 @@
             </DataGrid>
 
             <StackPanel Grid.Row="2" Margin="0,16,0,0">
-                <TextBlock>
+                <TextBlock FontSize="16" FontWeight="Bold">
                     <Run Text="Итого: "/>
-                    <Run x:Name="TotalPriceRun" Text="{Binding TotalPrice, StringFormat={}{0:N2} ₽}"/>
+                    <Run x:Name="TotalPriceRun"/>
                 </TextBlock>
                 <StackPanel Orientation="Horizontal" 
                             HorizontalAlignment="Right"

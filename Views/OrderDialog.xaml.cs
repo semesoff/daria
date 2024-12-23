@@ -39,7 +39,6 @@ namespace MenuOrder.Views
                         Converters = { new JsonStringEnumConverter() }
                     };
 
-                    // Выводим JSON для отладки
                     System.Diagnostics.Debug.WriteLine($"Loading order items from JSON: {existingOrder.ItemsJson}");
 
                     var items = JsonSerializer.Deserialize<List<MenuItem>>(existingOrder.ItemsJson, options);
@@ -66,7 +65,7 @@ namespace MenuOrder.Views
                             if (dbItem != null)
                             {
                                 _orderItems.Add(dbItem);
-                                System.Diagnostics.Debug.WriteLine($"Added item to order: {dbItem.Name}");
+                                System.Diagnostics.Debug.WriteLine($"Added item to order: {dbItem.Name}, Price={dbItem.CalculatePrice()}");
                             }
                         }
                     }
@@ -87,6 +86,11 @@ namespace MenuOrder.Views
             OrderItemsGrid.ItemsSource = _orderItems;
 
             decimal total = _orderItems.Sum(item => item.CalculatePrice());
+            System.Diagnostics.Debug.WriteLine($"Updating display with {_orderItems.Count} items, total price: {total}");
+            foreach (var item in _orderItems)
+            {
+                System.Diagnostics.Debug.WriteLine($"- {item.Name}: {item.CalculatePrice()}");
+            }
             TotalPriceRun.Text = $"{total:N2} ₽";
         }
 
@@ -96,6 +100,7 @@ namespace MenuOrder.Views
             if (selectedItem != null)
             {
                 _orderItems.Add(selectedItem);
+                System.Diagnostics.Debug.WriteLine($"Added item: {selectedItem.Name}, Price={selectedItem.CalculatePrice()}");
                 UpdateOrderDisplay();
             }
         }
@@ -106,6 +111,7 @@ namespace MenuOrder.Views
             if (selectedItem != null)
             {
                 _orderItems.Remove(selectedItem);
+                System.Diagnostics.Debug.WriteLine($"Removed item: {selectedItem.Name}, Price={selectedItem.CalculatePrice()}");
                 UpdateOrderDisplay();
             }
         }
