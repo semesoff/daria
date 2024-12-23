@@ -4,8 +4,8 @@ using System.Text.Json.Serialization;
 namespace MenuOrder.Models
 {
     // Базовый класс для демонстрации наследования
-    [JsonDerivedType(typeof(Dish), typeDiscriminator: "Dish")]
-    [JsonDerivedType(typeof(Beverage), typeDiscriminator: "Beverage")]
+    [JsonDerivedType(typeof(Dish), typeDiscriminator: "dish")]
+    [JsonDerivedType(typeof(Beverage), typeDiscriminator: "beverage")]
     public abstract class MenuItem
     {
         public int Id { get; set; }
@@ -15,7 +15,10 @@ namespace MenuOrder.Models
         public required string Category { get; set; }
 
         // Виртуальный метод для демонстрации полиморфизма
-        public abstract decimal CalculatePrice();
+        public virtual decimal CalculatePrice()
+        {
+            return Price;
+        }
     }
 
     // Пример наследования 1

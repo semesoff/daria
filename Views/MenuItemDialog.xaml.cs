@@ -78,15 +78,26 @@ namespace MenuOrder.Views
                     return;
                 }
 
-                var dish = _existingItem as Dish ?? new Dish
+                if (_existingItem is Dish existingDish)
                 {
-                    Name = NameTextBox.Text,
-                    Description = DescriptionTextBox.Text,
-                    Category = CategoryTextBox.Text
-                };
-                dish.Price = price;
-                dish.CookingTime = cookingTime;
-                ResultItem = dish;
+                    existingDish.Name = NameTextBox.Text;
+                    existingDish.Description = DescriptionTextBox.Text;
+                    existingDish.Category = CategoryTextBox.Text;
+                    existingDish.Price = price;
+                    existingDish.CookingTime = cookingTime;
+                    ResultItem = existingDish;
+                }
+                else
+                {
+                    ResultItem = new Dish
+                    {
+                        Name = NameTextBox.Text,
+                        Description = DescriptionTextBox.Text,
+                        Category = CategoryTextBox.Text,
+                        Price = price,
+                        CookingTime = cookingTime
+                    };
+                }
             }
             else
             {
@@ -96,16 +107,28 @@ namespace MenuOrder.Views
                     return;
                 }
 
-                var beverage = _existingItem as Beverage ?? new Beverage
+                if (_existingItem is Beverage existingBeverage)
                 {
-                    Name = NameTextBox.Text,
-                    Description = DescriptionTextBox.Text,
-                    Category = CategoryTextBox.Text
-                };
-                beverage.Price = price;
-                beverage.Volume = volume;
-                beverage.IsAlcoholic = IsAlcoholicCheckBox.IsChecked ?? false;
-                ResultItem = beverage;
+                    existingBeverage.Name = NameTextBox.Text;
+                    existingBeverage.Description = DescriptionTextBox.Text;
+                    existingBeverage.Category = CategoryTextBox.Text;
+                    existingBeverage.Price = price;
+                    existingBeverage.Volume = volume;
+                    existingBeverage.IsAlcoholic = IsAlcoholicCheckBox.IsChecked ?? false;
+                    ResultItem = existingBeverage;
+                }
+                else
+                {
+                    ResultItem = new Beverage
+                    {
+                        Name = NameTextBox.Text,
+                        Description = DescriptionTextBox.Text,
+                        Category = CategoryTextBox.Text,
+                        Price = price,
+                        Volume = volume,
+                        IsAlcoholic = IsAlcoholicCheckBox.IsChecked ?? false
+                    };
+                }
             }
 
             DialogResult = true;

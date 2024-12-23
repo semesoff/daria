@@ -11,6 +11,7 @@ namespace MenuOrder.Views
     {
         private readonly ApplicationDbContext _context;
         private readonly List<MenuItem> _orderItems;
+        private Order? _existingOrder;
         public Order? ResultOrder { get; private set; }
 
         public OrderDialog(ApplicationDbContext context, Order? existingOrder = null)
@@ -18,10 +19,11 @@ namespace MenuOrder.Views
             InitializeComponent();
             _context = context;
             _orderItems = new List<MenuItem>();
+            _existingOrder = existingOrder;
 
             // Загружаем все доступные элементы меню
-            var menuItems = _context.Dishes.ToList<MenuItem>()
-                .Concat(_context.Beverages.ToList<MenuItem>())
+            var menuItems = _context.Dishes.AsNoTracking().ToList<MenuItem>()
+                .Concat(_context.Beverages.AsNoTracking().ToList<MenuItem>())
                 .ToList();
             MenuItemsGrid.ItemsSource = menuItems;
 
@@ -29,7 +31,21 @@ namespace MenuOrder.Views
             {
                 foreach (var item in existingOrder.GetItems())
                 {
-                    _orderItems.Add(item);
+                    // Находим актуальную версию элемента из базы данных
+                    MenuItem? dbItem = null;
+                    if (item is Dish dish)
+                    {
+                        dbItem = _context.Dishes.FirstOrDefault(d => d.Id == dish.Id);
+                    }
+                    else if (item is Beverage beverage)
+                    {
+                        dbItem = _context.Beverages.FirstOrDefault(b => b.Id == beverage.Id);
+                    }
+
+                    if (dbItem != null)
+                    {
+                        _orderItems.Add(dbItem);
+                    }
                 }
             }
 
@@ -73,7 +89,16 @@ namespace MenuOrder.Views
                 return;
             }
 
-            ResultOrder = new Order();
+            if (_existingOrder != null)
+            {
+                ResultOrder = _existingOrder;
+            }
+            else
+            {
+                ResultOrder = new Order();
+            }
+
+            ResultOrder.ClearItems();
             foreach (var item in _orderItems)
             {
                 ResultOrder.AddItem(item);

@@ -48,7 +48,9 @@ namespace MenuOrder
             menuColumns[4].Visibility = Visibility.Visible; // ID заказа
             menuColumns[5].Visibility = Visibility.Visible; // Дата заказа
 
-            MainDataGrid.ItemsSource = _context.Orders.ToList();
+            // Загружаем заказы с отслеживанием изменений
+            var orders = _context.Orders.AsNoTracking().ToList();
+            MainDataGrid.ItemsSource = orders;
         }
 
         private void MenuButton_Click(object sender, RoutedEventArgs e)

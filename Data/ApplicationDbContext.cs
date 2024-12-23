@@ -25,7 +25,12 @@ namespace MenuOrder.Data
             // Конфигурация для Order
             modelBuilder.Entity<Order>(entity =>
             {
-                entity.Property(e => e.ItemsJson).HasColumnName("Items");
+                entity.Property(e => e.ItemsJson)
+                    .HasColumnName("Items")
+                    .HasConversion(
+                        v => v,
+                        v => string.IsNullOrEmpty(v) ? "[]" : v
+                    );
                 entity.Property(e => e.TotalPrice).HasColumnType("decimal(18,2)");
             });
         }
