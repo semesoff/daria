@@ -42,7 +42,7 @@ namespace MenuOrder.Views
             OrderItemsGrid.ItemsSource = _orderItems;
 
             decimal total = _orderItems.Sum(item => item.CalculatePrice());
-            TotalPriceRun.Text = total.ToString("C");
+            TotalPriceRun.Text = $"{total:N2} ₽";
         }
 
         private void AddToOrder_Click(object sender, RoutedEventArgs e)
