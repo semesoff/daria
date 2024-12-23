@@ -1,0 +1,80 @@
+<Window x:Class="MenuOrder.Views.StatisticsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        Title="Статистика" 
+        Height="450" Width="800"
+        WindowStartupLocation="CenterOwner">
+    
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Общая статистика -->
+        <StackPanel Grid.Column="0" Margin="0,0,8,0">
+            <TextBlock Text="Общая статистика"
+                       Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                       Margin="0,0,0,16"/>
+
+            <materialDesign:Card Padding="16" Margin="0,0,0,8">
+                <StackPanel>
+                    <TextBlock Text="Количество заказов:"/>
+                    <TextBlock x:Name="OrderCountText"
+                               Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                               Margin="0,8,0,0"/>
+                </StackPanel>
+            </materialDesign:Card>
+
+            <materialDesign:Card Padding="16" Margin="0,0,0,8">
+                <StackPanel>
+                    <TextBlock Text="Общая выручка:"/>
+                    <TextBlock x:Name="TotalRevenueText"
+                               Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                               Margin="0,8,0,0"/>
+                </StackPanel>
+            </materialDesign:Card>
+
+            <materialDesign:Card Padding="16">
+                <StackPanel>
+                    <TextBlock Text="Средний чек:"/>
+                    <TextBlock x:Name="AverageOrderText"
+                               Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                               Margin="0,8,0,0"/>
+                </StackPanel>
+            </materialDesign:Card>
+        </StackPanel>
+
+        <!-- Популярные позиции -->
+        <Grid Grid.Column="1" Margin="8,0,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="Популярные позиции"
+                       Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                       Margin="0,0,0,16"/>
+
+            <DataGrid x:Name="PopularItemsGrid"
+                      Grid.Row="1"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Название" 
+                                        Binding="{Binding Name}" 
+                                        Width="*"/>
+                    <DataGridTextColumn Header="Количество заказов" 
+                                        Binding="{Binding OrderCount}" 
+                                        Width="Auto"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+    </Grid>
+</Window>

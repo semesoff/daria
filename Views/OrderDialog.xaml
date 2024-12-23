@@ -1,0 +1,90 @@
+<Window x:Class="MenuOrder.Views.OrderDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        Title="Управление заказом" 
+        Height="600" Width="800"
+        WindowStartupLocation="CenterOwner">
+    
+    <Grid Margin="16">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Доступные элементы меню -->
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="Доступные позиции"
+                       Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                       Margin="0,0,0,8"/>
+
+            <DataGrid x:Name="MenuItemsGrid"
+                      Grid.Row="1"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Название" Binding="{Binding Name}"/>
+                    <DataGridTextColumn Header="Цена" Binding="{Binding Price, StringFormat=C}"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+
+        <!-- Кнопки управления -->
+        <StackPanel Grid.Column="1" 
+                    Margin="16,0" 
+                    VerticalAlignment="Center">
+            <Button Content="→"
+                    Margin="0,8"
+                    Click="AddToOrder_Click"/>
+            <Button Content="←"
+                    Margin="0,8"
+                    Click="RemoveFromOrder_Click"/>
+        </StackPanel>
+
+        <!-- Текущий заказ -->
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="Заказ"
+                       Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                       Margin="0,0,0,8"/>
+
+            <DataGrid x:Name="OrderItemsGrid"
+                      Grid.Row="1"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Название" Binding="{Binding Name}"/>
+                    <DataGridTextColumn Header="Цена" Binding="{Binding CalculatePrice(), StringFormat=C}"/>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <StackPanel Grid.Row="2" Margin="0,16,0,0">
+                <TextBlock>
+                    <Run Text="Итого: "/>
+                    <Run x:Name="TotalPriceRun"/>
+                </TextBlock>
+                <StackPanel Orientation="Horizontal" 
+                            HorizontalAlignment="Right"
+                            Margin="0,16,0,0">
+                    <Button Content="Отмена"
+                            Style="{StaticResource MaterialDesignOutlinedButton}"
+                            Margin="0,0,8,0"
+                            Click="CancelButton_Click"/>
+                    <Button Content="Оформить заказ"
+                            Click="SaveButton_Click"/>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

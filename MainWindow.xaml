@@ -1,0 +1,136 @@
+<Window x:Class="MenuOrder.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:local="clr-namespace:MenuOrder"
+        mc:Ignorable="d"
+        Title="Restaurant Menu Manager" Height="720" Width="1280"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        Background="{DynamicResource MaterialDesignPaper}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal"
+        TextOptions.TextRenderingMode="Auto"
+        FontFamily="{materialDesign:MaterialDesignFont}">
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Левая панель навигации -->
+        <materialDesign:Card Grid.Column="0" Margin="16" UniformCornerRadius="8">
+            <StackPanel>
+                <Button x:Name="MenuButton" 
+                        Content="Меню" 
+                        Margin="8"
+                        Style="{StaticResource MaterialDesignFlatButton}"
+                        Click="MenuButton_Click"/>
+                <Button x:Name="OrdersButton" 
+                        Content="Заказы" 
+                        Margin="8"
+                        Style="{StaticResource MaterialDesignFlatButton}"
+                        Click="OrdersButton_Click"/>
+                <Button x:Name="StatisticsButton" 
+                        Content="Статистика" 
+                        Margin="8"
+                        Style="{StaticResource MaterialDesignFlatButton}"
+                        Click="StatisticsButton_Click"/>
+            </StackPanel>
+        </materialDesign:Card>
+
+        <!-- Основная область контента -->
+        <Grid Grid.Column="1" Margin="16">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Верхняя панель с кнопками управления -->
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,16">
+                <Button x:Name="AddButton"
+                        Content="Добавить"
+                        Style="{StaticResource MaterialDesignRaisedButton}"
+                        Margin="0,0,8,0"
+                        Click="AddButton_Click"/>
+                <Button x:Name="EditButton"
+                        Content="Изменить"
+                        Style="{StaticResource MaterialDesignRaisedButton}"
+                        Margin="0,0,8,0"
+                        Click="EditButton_Click"/>
+                <Button x:Name="DeleteButton"
+                        Content="Удалить"
+                        Style="{StaticResource MaterialDesignRaisedButton}"
+                        Click="DeleteButton_Click"/>
+            </StackPanel>
+
+            <!-- Таблица с данными -->
+            <DataGrid x:Name="MainDataGrid"
+                      Grid.Row="1"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True"
+                      SelectionMode="Single"
+                      SelectionUnit="FullRow"
+                      materialDesign:DataGridAssist.CellPadding="13 8 8 8"
+                      materialDesign:DataGridAssist.ColumnHeaderPadding="8">
+                <DataGrid.Resources>
+                    <Style x:Key="MenuItemStyle" TargetType="DataGridRow">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=Tag}" Value="Menu">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=Tag}" Value="Orders">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                    <Style x:Key="OrderStyle" TargetType="DataGridRow">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=Tag}" Value="Menu">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=Tag}" Value="Orders">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.Resources>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Название" Binding="{Binding Name}" Width="*"/>
+                    <DataGridTextColumn Header="Описание" Binding="{Binding Description}" Width="2*"/>
+                    <DataGridTextColumn Header="Цена" Binding="{Binding Price, StringFormat=C}" Width="*"/>
+                    <DataGridTextColumn Header="Категория" Binding="{Binding Category}" Width="*">
+                        <DataGridTextColumn.Visibility>
+                            <Binding RelativeSource="{RelativeSource AncestorType=DataGrid}" Path="Tag">
+                                <Binding.Converter>
+                                    <local:VisibilityConverter TrueValue="Menu" />
+                                </Binding.Converter>
+                            </Binding>
+                        </DataGridTextColumn.Visibility>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="Дата заказа" Binding="{Binding OrderDate}" Width="*">
+                        <DataGridTextColumn.Visibility>
+                            <Binding RelativeSource="{RelativeSource AncestorType=DataGrid}" Path="Tag">
+                                <Binding.Converter>
+                                    <local:VisibilityConverter TrueValue="Orders" />
+                                </Binding.Converter>
+                            </Binding>
+                        </DataGridTextColumn.Visibility>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="Статус" Binding="{Binding Status}" Width="*">
+                        <DataGridTextColumn.Visibility>
+                            <Binding RelativeSource="{RelativeSource AncestorType=DataGrid}" Path="Tag">
+                                <Binding.Converter>
+                                    <local:VisibilityConverter TrueValue="Orders" />
+                                </Binding.Converter>
+                            </Binding>
+                        </DataGridTextColumn.Visibility>
+                    </DataGridTextColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+    </Grid>
+</Window>
