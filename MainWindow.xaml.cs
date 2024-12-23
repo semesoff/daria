@@ -127,12 +127,23 @@ namespace MenuOrder
             {
                 if (MainDataGrid.SelectedItem is Order selectedOrder)
                 {
-                    var dialog = new OrderDialog(_context, selectedOrder);
-                    dialog.Owner = this;
-                    if (dialog.ShowDialog() == true && dialog.ResultOrder != null)
+                    // Загружаем заказ с его элементами
+                    var order = _context.Orders
+                        .AsNoTracking()
+                        .FirstOrDefault(o => o.Id == selectedOrder.Id);
+
+                    if (order != null)
                     {
-                        _context.SaveChanges();
-                        LoadOrders();
+                        var dialog = new OrderDialog(_context, order);
+                        dialog.Owner = this;
+                        if (dialog.ShowDialog() == true && dialog.ResultOrder != null)
+                        {
+                            // Обновляем существующий заказ
+                            selectedOrder.ItemsJson = dialog.ResultOrder.ItemsJson;
+                            selectedOrder.TotalPrice = dialog.ResultOrder.TotalPrice;
+                            _context.SaveChanges();
+                            LoadOrders();
+                        }
                     }
                 }
             }

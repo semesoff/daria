@@ -4,6 +4,8 @@ using System.Windows;
 using MenuOrder.Data;
 using MenuOrder.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace MenuOrder.Views
 {
@@ -11,7 +13,7 @@ namespace MenuOrder.Views
     {
         private readonly ApplicationDbContext _context;
         private readonly List<MenuItem> _orderItems;
-        private Order? _existingOrder;
+        private readonly Order? _existingOrder;
         public Order? ResultOrder { get; private set; }
 
         public OrderDialog(ApplicationDbContext context, Order? existingOrder = null)
@@ -27,25 +29,52 @@ namespace MenuOrder.Views
                 .ToList();
             MenuItemsGrid.ItemsSource = menuItems;
 
-            if (existingOrder != null)
+            if (existingOrder != null && !string.IsNullOrEmpty(existingOrder.ItemsJson))
             {
-                foreach (var item in existingOrder.GetItems())
+                try
                 {
-                    // Находим актуальную версию элемента из базы данных
-                    MenuItem? dbItem = null;
-                    if (item is Dish dish)
+                    var options = new JsonSerializerOptions
                     {
-                        dbItem = _context.Dishes.FirstOrDefault(d => d.Id == dish.Id);
-                    }
-                    else if (item is Beverage beverage)
-                    {
-                        dbItem = _context.Beverages.FirstOrDefault(b => b.Id == beverage.Id);
-                    }
+                        PropertyNameCaseInsensitive = true,
+                        Converters = { new JsonStringEnumConverter() }
+                    };
 
-                    if (dbItem != null)
+                    // Выводим JSON для отладки
+                    System.Diagnostics.Debug.WriteLine($"Loading order items from JSON: {existingOrder.ItemsJson}");
+
+                    var items = JsonSerializer.Deserialize<List<MenuItem>>(existingOrder.ItemsJson, options);
+
+                    if (items != null)
                     {
-                        _orderItems.Add(dbItem);
+                        foreach (var item in items)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"Processing item: Type={item.GetType().Name}, Id={item.Id}, Name={item.Name}");
+
+                            // Находим актуальную версию элемента из базы данных
+                            MenuItem? dbItem = null;
+                            if (item is Dish dish)
+                            {
+                                dbItem = menuItems.OfType<Dish>().FirstOrDefault(d => d.Id == dish.Id);
+                                System.Diagnostics.Debug.WriteLine($"Looking for Dish with Id={dish.Id}, Found={(dbItem != null)}");
+                            }
+                            else if (item is Beverage beverage)
+                            {
+                                dbItem = menuItems.OfType<Beverage>().FirstOrDefault(b => b.Id == beverage.Id);
+                                System.Diagnostics.Debug.WriteLine($"Looking for Beverage with Id={beverage.Id}, Found={(dbItem != null)}");
+                            }
+
+                            if (dbItem != null)
+                            {
+                                _orderItems.Add(dbItem);
+                                System.Diagnostics.Debug.WriteLine($"Added item to order: {dbItem.Name}");
+                            }
+                        }
                     }
+                }
+                catch (JsonException ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Error deserializing order items: {ex.Message}");
+                    MessageBox.Show($"Ошибка при загрузке элементов заказа: {ex.Message}", "Ошибка");
                 }
             }
 

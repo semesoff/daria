@@ -9,10 +9,10 @@ namespace MenuOrder.Models
     public abstract class MenuItem
     {
         public int Id { get; set; }
-        public required string Name { get; set; }
-        public required string Description { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
         public decimal Price { get; set; }
-        public required string Category { get; set; }
+        public string Category { get; set; }
 
         // Виртуальный метод для демонстрации полиморфизма
         public virtual decimal CalculatePrice()
@@ -40,7 +40,7 @@ namespace MenuOrder.Models
 
         public override decimal CalculatePrice()
         {
-            return IsAlcoholic ? Price * 1.2m : Price;
+            return Price;
         }
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace MenuOrder.Models
 {
@@ -23,15 +24,25 @@ namespace MenuOrder.Models
                 _itemsJson = value;
                 if (!string.IsNullOrEmpty(value))
                 {
-                    var options = new JsonSerializerOptions
+                    try
                     {
-                        PropertyNameCaseInsensitive = true
-                    };
-                    var items = JsonSerializer.Deserialize<List<MenuItem>>(value, options);
-                    _items.Clear();
-                    if (items != null)
+                        var options = new JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true,
+                            Converters = { new JsonStringEnumConverter() }
+                        };
+                        var items = JsonSerializer.Deserialize<List<MenuItem>>(value, options);
+                        _items.Clear();
+                        if (items != null)
+                        {
+                            _items.AddRange(items);
+                        }
+                    }
+                    catch (JsonException ex)
                     {
-                        _items.AddRange(items);
+                        System.Diagnostics.Debug.WriteLine($"JSON Deserialization error: {ex.Message}");
+                        _items.Clear();
+                        _itemsJson = "[]";
                     }
                 }
             }
@@ -78,11 +89,20 @@ namespace MenuOrder.Models
 
         private void UpdateItemsJson()
         {
-            var options = new JsonSerializerOptions
+            try
             {
-                PropertyNameCaseInsensitive = true
-            };
-            _itemsJson = JsonSerializer.Serialize(_items, options);
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
+                    Converters = { new JsonStringEnumConverter() }
+                };
+                _itemsJson = JsonSerializer.Serialize(_items, options);
+            }
+            catch (JsonException ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"JSON Serialization error: {ex.Message}");
+                _itemsJson = "[]";
+            }
         }
     }
 }
