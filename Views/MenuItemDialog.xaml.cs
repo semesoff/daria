@@ -6,114 +6,116 @@ namespace MenuOrder.Views
 {
     public partial class MenuItemDialog : Window
     {
-        public MenuItem ResultItem { get; private set; }
-        private MenuItem _editingItem;
+        public MenuItem? ResultItem { get; private set; }
+        private readonly MenuItem? _existingItem;
 
-        public MenuItemDialog(MenuItem item = null)
+        public MenuItemDialog(MenuItem? item = null)
         {
             InitializeComponent();
-            _editingItem = item;
-            
+            _existingItem = item;
+
             if (item != null)
             {
-                // Заполняем поля для редактирования
                 NameTextBox.Text = item.Name;
                 DescriptionTextBox.Text = item.Description;
                 PriceTextBox.Text = item.Price.ToString();
+                CategoryTextBox.Text = item.Category;
 
                 if (item is Dish dish)
                 {
-                    TypeComboBox.SelectedIndex = 0;
+                    DishRadioButton.IsChecked = true;
                     CookingTimeTextBox.Text = dish.CookingTime.ToString();
-                    CategoryTextBox.Text = dish.Category;
                 }
                 else if (item is Beverage beverage)
                 {
-                    TypeComboBox.SelectedIndex = 1;
+                    BeverageRadioButton.IsChecked = true;
                     VolumeTextBox.Text = beverage.Volume.ToString();
                     IsAlcoholicCheckBox.IsChecked = beverage.IsAlcoholic;
                 }
             }
             else
             {
-                TypeComboBox.SelectedIndex = 0;
+                DishRadioButton.IsChecked = true;
             }
+
+            UpdateVisibility();
         }
 
-        private void TypeComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private void TypeRadioButton_Checked(object sender, RoutedEventArgs e)
         {
-            if (TypeComboBox.SelectedIndex == 0)
-            {
-                DishPanel.Visibility = Visibility.Visible;
-                BeveragePanel.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-                DishPanel.Visibility = Visibility.Collapsed;
-                BeveragePanel.Visibility = Visibility.Visible;
-            }
+            UpdateVisibility();
+        }
+
+        private void UpdateVisibility()
+        {
+            bool isDish = DishRadioButton.IsChecked == true;
+            DishPanel.Visibility = isDish ? Visibility.Visible : Visibility.Collapsed;
+            BeveragePanel.Visibility = isDish ? Visibility.Collapsed : Visibility.Visible;
         }
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
-            try
+            if (string.IsNullOrWhiteSpace(NameTextBox.Text) ||
+                string.IsNullOrWhiteSpace(DescriptionTextBox.Text) ||
+                string.IsNullOrWhiteSpace(PriceTextBox.Text) ||
+                string.IsNullOrWhiteSpace(CategoryTextBox.Text))
             {
-                if (string.IsNullOrWhiteSpace(NameTextBox.Text))
+                MessageBox.Show("Пожалуйста, заполните все поля", "Ошибка");
+                return;
+            }
+
+            if (!decimal.TryParse(PriceTextBox.Text, out decimal price))
+            {
+                MessageBox.Show("Некорректная цена", "Ошибка");
+                return;
+            }
+
+            if (DishRadioButton.IsChecked == true)
+            {
+                if (!int.TryParse(CookingTimeTextBox.Text, out int cookingTime))
                 {
-                    MessageBox.Show("Пожалуйста, введите название", "Ошибка");
+                    MessageBox.Show("Некорректное время приготовления", "Ошибка");
                     return;
                 }
 
-                if (!decimal.TryParse(PriceTextBox.Text, out decimal price))
+                var dish = _existingItem as Dish ?? new Dish
                 {
-                    MessageBox.Show("Пожалуйста, введите корректную цену", "Ошибка");
+                    Name = NameTextBox.Text,
+                    Description = DescriptionTextBox.Text,
+                    Category = CategoryTextBox.Text
+                };
+                dish.Price = price;
+                dish.CookingTime = cookingTime;
+                ResultItem = dish;
+            }
+            else
+            {
+                if (!int.TryParse(VolumeTextBox.Text, out int volume))
+                {
+                    MessageBox.Show("Некорректный объем", "Ошибка");
                     return;
                 }
 
-                if (TypeComboBox.SelectedIndex == 0) // Dish
+                var beverage = _existingItem as Beverage ?? new Beverage
                 {
-                    if (!int.TryParse(CookingTimeTextBox.Text, out int cookingTime))
-                    {
-                        MessageBox.Show("Пожалуйста, введите корректное время приготовления", "Ошибка");
-                        return;
-                    }
-
-                    ResultItem = _editingItem as Dish ?? new Dish();
-                    var dish = (Dish)ResultItem;
-                    dish.Name = NameTextBox.Text;
-                    dish.Description = DescriptionTextBox.Text;
-                    dish.Price = price;
-                    dish.CookingTime = cookingTime;
-                    dish.Category = CategoryTextBox.Text;
-                }
-                else // Beverage
-                {
-                    if (!double.TryParse(VolumeTextBox.Text, out double volume))
-                    {
-                        MessageBox.Show("Пожалуйста, введите корректный объем", "Ошибка");
-                        return;
-                    }
-
-                    ResultItem = _editingItem as Beverage ?? new Beverage();
-                    var beverage = (Beverage)ResultItem;
-                    beverage.Name = NameTextBox.Text;
-                    beverage.Description = DescriptionTextBox.Text;
-                    beverage.Price = price;
-                    beverage.Volume = volume;
-                    beverage.IsAlcoholic = IsAlcoholicCheckBox.IsChecked ?? false;
-                }
-
-                DialogResult = true;
+                    Name = NameTextBox.Text,
+                    Description = DescriptionTextBox.Text,
+                    Category = CategoryTextBox.Text
+                };
+                beverage.Price = price;
+                beverage.Volume = volume;
+                beverage.IsAlcoholic = IsAlcoholicCheckBox.IsChecked ?? false;
+                ResultItem = beverage;
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка при сохранении: {ex.Message}", "Ошибка");
-            }
+
+            DialogResult = true;
+            Close();
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = false;
+            Close();
         }
     }
 }

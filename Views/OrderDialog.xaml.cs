@@ -11,9 +11,9 @@ namespace MenuOrder.Views
     {
         private readonly ApplicationDbContext _context;
         private readonly List<MenuItem> _orderItems;
-        public Order ResultOrder { get; private set; }
+        public Order? ResultOrder { get; private set; }
 
-        public OrderDialog(ApplicationDbContext context, Order existingOrder = null)
+        public OrderDialog(ApplicationDbContext context, Order? existingOrder = null)
         {
             InitializeComponent();
             _context = context;

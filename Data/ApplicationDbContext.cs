@@ -21,6 +21,13 @@ namespace MenuOrder.Data
             // Конфигурация для правильного наследования
             modelBuilder.Entity<Dish>().ToTable("Dishes");
             modelBuilder.Entity<Beverage>().ToTable("Beverages");
+
+            // Конфигурация для Order
+            modelBuilder.Entity<Order>(entity =>
+            {
+                entity.Property(e => e.ItemsJson).HasColumnName("Items");
+                entity.Property(e => e.TotalPrice).HasColumnType("decimal(18,2)");
+            });
         }
     }
 }

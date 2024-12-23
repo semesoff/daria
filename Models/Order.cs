@@ -1,27 +1,41 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 
 namespace MenuOrder.Models
 {
     public class Order
     {
-        // Инкапсуляция - приватные поля
-        private List<MenuItem> _items;
-        private decimal _totalPrice;
+        private List<MenuItem> _items = new();
 
         public int Id { get; set; }
         public DateTime OrderDate { get; set; }
-        public string Status { get; set; }
+        public string Status { get; set; } = "New";
+        public decimal TotalPrice { get; set; }
+        
+        public string? ItemsJson 
+        { 
+            get => _items.Any() ? JsonSerializer.Serialize(_items) : null;
+            set
+            {
+                if (!string.IsNullOrEmpty(value))
+                {
+                    var options = new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    };
+                    _items = JsonSerializer.Deserialize<List<MenuItem>>(value, options) ?? new();
+                }
+            }
+        }
 
         public Order()
         {
-            _items = new List<MenuItem>();
             OrderDate = DateTime.Now;
-            Status = "New";
+            TotalPrice = 0;
         }
 
-        // Публичные методы для работы с приватными полями
         public void AddItem(MenuItem item)
         {
             _items.Add(item);
@@ -39,14 +53,9 @@ namespace MenuOrder.Models
             return _items.AsReadOnly();
         }
 
-        public decimal GetTotalPrice()
-        {
-            return _totalPrice;
-        }
-
         private void CalculateTotalPrice()
         {
-            _totalPrice = _items.Sum(item => item.CalculatePrice());
+            TotalPrice = _items.Sum(item => item.CalculatePrice());
         }
     }
 }

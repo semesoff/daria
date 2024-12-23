@@ -110,24 +110,28 @@ namespace MenuOrder
 
             if (_currentView == "Menu")
             {
-                var selectedItem = MainDataGrid.SelectedItem as MenuItem;
-                var dialog = new MenuItemDialog(selectedItem);
-                dialog.Owner = this;
-                if (dialog.ShowDialog() == true)
+                if (MainDataGrid.SelectedItem is MenuItem selectedItem)
                 {
-                    _context.SaveChanges();
-                    LoadMenuItems();
+                    var dialog = new MenuItemDialog(selectedItem);
+                    dialog.Owner = this;
+                    if (dialog.ShowDialog() == true && dialog.ResultItem != null)
+                    {
+                        _context.SaveChanges();
+                        LoadMenuItems();
+                    }
                 }
             }
             else if (_currentView == "Orders")
             {
-                var selectedOrder = MainDataGrid.SelectedItem as Order;
-                var dialog = new OrderDialog(_context, selectedOrder);
-                dialog.Owner = this;
-                if (dialog.ShowDialog() == true)
+                if (MainDataGrid.SelectedItem is Order selectedOrder)
                 {
-                    _context.SaveChanges();
-                    LoadOrders();
+                    var dialog = new OrderDialog(_context, selectedOrder);
+                    dialog.Owner = this;
+                    if (dialog.ShowDialog() == true && dialog.ResultOrder != null)
+                    {
+                        _context.SaveChanges();
+                        LoadOrders();
+                    }
                 }
             }
         }
@@ -147,16 +151,20 @@ namespace MenuOrder
             {
                 if (_currentView == "Menu")
                 {
-                    var selectedItem = MainDataGrid.SelectedItem as MenuItem;
-                    if (selectedItem is Dish dish)
-                        _context.Dishes.Remove(dish);
-                    else if (selectedItem is Beverage beverage)
-                        _context.Beverages.Remove(beverage);
+                    if (MainDataGrid.SelectedItem is MenuItem selectedItem)
+                    {
+                        if (selectedItem is Dish dish)
+                            _context.Dishes.Remove(dish);
+                        else if (selectedItem is Beverage beverage)
+                            _context.Beverages.Remove(beverage);
+                    }
                 }
                 else if (_currentView == "Orders")
                 {
-                    var selectedOrder = MainDataGrid.SelectedItem as Order;
-                    _context.Orders.Remove(selectedOrder);
+                    if (MainDataGrid.SelectedItem is Order selectedOrder)
+                    {
+                        _context.Orders.Remove(selectedOrder);
+                    }
                 }
 
                 _context.SaveChanges();

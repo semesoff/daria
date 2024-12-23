@@ -83,11 +83,11 @@
                     <!-- Menu-only columns -->
                     <DataGridTextColumn Header="Название" Binding="{Binding Name}" Width="*"/>
                     <DataGridTextColumn Header="Описание" Binding="{Binding Description}" Width="2*"/>
-                    <DataGridTextColumn Header="Цена" Binding="{Binding Price, StringFormat=C}" Width="*"/>
+                    <DataGridTextColumn Header="Цена" Binding="{Binding Price, StringFormat={}{0:N2} ₽}" Width="*"/>
                     <DataGridTextColumn Header="Категория" Binding="{Binding Category}" Width="*"/>
                     
                     <!-- Orders-only columns -->
-                    <DataGridTextColumn Header="ID заказа" Binding="{Binding OrderId}" Width="*"/>
+                    <DataGridTextColumn Header="ID заказа" Binding="{Binding Id}" Width="*"/>
                     <DataGridTextColumn Header="Дата заказа" Binding="{Binding OrderDate}" Width="*"/>
                 </DataGrid.Columns>
             </DataGrid>
