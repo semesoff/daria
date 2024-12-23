@@ -23,6 +23,15 @@ namespace MenuOrder
 
         private void LoadMenuItems()
         {
+            var menuColumns = MainDataGrid.Columns;
+            // Показываем только колонки меню
+            menuColumns[0].Visibility = Visibility.Visible; // Название
+            menuColumns[1].Visibility = Visibility.Visible; // Описание
+            menuColumns[2].Visibility = Visibility.Visible; // Цена
+            menuColumns[3].Visibility = Visibility.Visible; // Категория
+            menuColumns[4].Visibility = Visibility.Collapsed; // ID заказа
+            menuColumns[5].Visibility = Visibility.Collapsed; // Дата заказа
+
             var items = _context.Dishes.ToList<MenuItem>()
                 .Concat(_context.Beverages.ToList<MenuItem>());
             MainDataGrid.ItemsSource = items;
@@ -30,6 +39,15 @@ namespace MenuOrder
 
         private void LoadOrders()
         {
+            var menuColumns = MainDataGrid.Columns;
+            // Показываем только колонки заказов
+            menuColumns[0].Visibility = Visibility.Collapsed; // Название
+            menuColumns[1].Visibility = Visibility.Collapsed; // Описание
+            menuColumns[2].Visibility = Visibility.Collapsed; // Цена
+            menuColumns[3].Visibility = Visibility.Collapsed; // Категория
+            menuColumns[4].Visibility = Visibility.Visible; // ID заказа
+            menuColumns[5].Visibility = Visibility.Visible; // Дата заказа
+
             MainDataGrid.ItemsSource = _context.Orders.ToList();
         }
 
